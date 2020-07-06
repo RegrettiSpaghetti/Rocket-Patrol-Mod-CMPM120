@@ -7,9 +7,14 @@ class Menu extends Phaser.Scene {
 
     preload() {
         // load audio
-        this.load.audio('sfx_select', './assets/blip_select12.wav');
-        this.load.audio('sfx_explosion', './assets/explosion38.wav');
-        this.load.audio('sfx_rocket', './assets/rocket_shot.wav');        
+        this.load.audio('sfx_select', './assets/Beep_sfx1.mp3');
+        this.load.audio('sfx_explosion1', './assets/explosion_sfx1.mp3');
+        this.load.audio('sfx_explosion2', './assets/Kaboom1.mp3');
+        this.load.audio('sfx_explosion3', './assets/skin_melt1.mp3');
+        this.load.audio('sfx_explosion4', './assets/guy_ded1.mp3');
+        this.load.audio('sfx_rocket', './assets/Rahket_sfx1.mp3');     
+        this.load.audio('game_over', './assets/game_over_sfx.mp3');
+        this.load.audio('easter_egg', './assets/lovetheway_sfx1.mp3');
     }
 
     create() {
@@ -51,9 +56,14 @@ class Menu extends Phaser.Scene {
                 gameTimer: 5000,
                 playTimer: 5000
             }
-            this.sound.play('sfx_select');
+
+            // play the beep SFX
+            this.sound.play('sfx_select'); 
+
+            // play the scene
             this.scene.start("playScene");
         }
+
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
             // hard mode
             game.settings = {
@@ -61,7 +71,9 @@ class Menu extends Phaser.Scene {
                 gameTimer: 5000,
                 playTimer: 5000
             }
-            this.sound.play('sfx_select');
+
+            this.sound.play('sfx_select'); 
+
             this.scene.start("playScene");
         }
     }

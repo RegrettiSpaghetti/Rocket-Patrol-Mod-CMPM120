@@ -97,6 +97,8 @@ class Play extends Phaser.Scene {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
+            this.sound.play('game_over');
+            setTimeout(this.sound.play('easter_egg'), 6000);
         }, null, this);
     }
 
@@ -207,9 +209,23 @@ class Play extends Phaser.Scene {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
+            this.sound.play('game_over');
+            setTimeout(this.sound.play('easter_egg'), 6000);
         }, null, this);
 
-        // Play the explosion SFX
-        this.sound.play('sfx_explosion');
+        // Play one of four random explosion SFX
+        let sfxNum = Phaser.Math.Between(1,4)
+        if (sfxNum == 1) {
+            this.sound.play('sfx_explosion1');
+        }
+        else if (sfxNum == 2) { 
+            this.sound.play('sfx_explosion2');
+        }
+        else if (sfxNum == 3) { 
+            this.sound.play('sfx_explosion3');
+        }
+        else if (sfxNum == 4) { 
+            this.sound.play('sfx_explosion4');
+        } 
     }
 }
