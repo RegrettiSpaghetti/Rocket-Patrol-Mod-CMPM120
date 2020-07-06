@@ -12,7 +12,8 @@ let game = new Phaser.Game(config);
 // game difficulty
 game.settings = {
     spaceshipSpeed: 3,
-    gameTimer: 60000
+    gameTimer: 60000,
+    playTimer: 60000
 }
 
 // reserve some keyboard bindings

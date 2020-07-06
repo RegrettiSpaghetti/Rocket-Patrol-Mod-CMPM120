@@ -32,13 +32,13 @@ class Play extends Phaser.Scene {
         
         //add spaceships [x3]
         this.ship01 = new Spaceship(this, game.config.width + 192, 132,
-        'spaceship', 0, 30).setOrigin(0, 0);
+        'spaceship', 0, 30, 4000).setOrigin(0, 0);
     
         this.ship02 = new Spaceship(this, game.config.width + 96, 196,
-        'spaceship', 0, 20).setOrigin(0, 0);
+        'spaceship', 0, 20, 2000).setOrigin(0, 0);
     
         this.ship03 = new Spaceship(this, game.config.width, 263,
-        'spaceship', 0, 10).setOrigin(0, 0);
+        'spaceship', 0, 10, 0).setOrigin(0, 0);
 
         // define our keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -73,9 +73,12 @@ class Play extends Phaser.Scene {
         // Game Over flag
         this.gameOver = false;
 
+        // Create a Time Left Variable
+        this.timeLeft = 0;
+
         // Play Clock
         scoreConfig.fixedWidth = 0;
-        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
+        this.clock = this.time.delayedCall(game.settings.playTimer, () => {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
@@ -86,6 +89,7 @@ class Play extends Phaser.Scene {
         //check key input for restart
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyF)) {
             this.scene.restart(this.p1Score);
+            game.settings.playTimer = game.settings.gameTimer;
         }
 
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
@@ -148,6 +152,40 @@ class Play extends Phaser.Scene {
         // Increment the score!
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
+
+        // get the current time left in the clock
+        // make gameTimer = to the current time left
+        // add the time of the ships TimerValue to gameTimer to get the time of the new clock
+        // create a new timer event
+        // clear the old clock
+
+        // Restablish the config
+        let scoreConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+
+        this.timeLeft = (game.settings.playTimer - this.clock.getElapsed());
+        //console.log("this is how much time is left in ms: " + this.timeLeft);
+        //console.log("this is the total time of the current timer in ms: " + game.settings.gameTimer);
+        game.settings.playTimer = this.timeLeft + ship.time;
+        console.log("this is the length of gameTimer: " + game.settings.playTimer);
+        //console.log("this is the new timer's length in ms: " + (game.settings.gameTimer + (ship.time)));
+        this.clock.destroy();
+        //this.clock.remove([false]);
+        this.clock = this.time.delayedCall(game.settings.playTimer, () => {
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5);
+            this.gameOver = true;
+        }, null, this);
 
         // Play the explosion SFX
         this.sound.play('sfx_explosion');
