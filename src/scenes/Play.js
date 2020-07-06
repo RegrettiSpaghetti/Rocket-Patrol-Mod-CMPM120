@@ -32,13 +32,13 @@ class Play extends Phaser.Scene {
         
         //add spaceships [x3]
         this.ship01 = new Spaceship(this, game.config.width + 192, 132,
-        'spaceship', 0, 30, 4000).setOrigin(0, 0);
+        'spaceship', 0, 30, 2000).setOrigin(0, 0);
     
         this.ship02 = new Spaceship(this, game.config.width + 96, 196,
-        'spaceship', 0, 20, 2000).setOrigin(0, 0);
+        'spaceship', 0, 20, 1000).setOrigin(0, 0);
     
         this.ship03 = new Spaceship(this, game.config.width, 263,
-        'spaceship', 0, 10, 0).setOrigin(0, 0);
+        'spaceship', 0, 10, 500).setOrigin(0, 0);
 
         // define our keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -52,10 +52,13 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
 
-        // bind the score to the screen
+        // Bind the score to the screen
         this.p1Score = 0;
 
-        // score display
+        // Bind the remaining time to the screen
+        this.timeRemain = game.settings.playTimer;
+
+        // Score display
         let scoreConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
@@ -69,12 +72,24 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
         this.scoreLeft = this.add.text(69, 54, this.p1Score, scoreConfig);
+
+        // Time Display
+        let timeConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#963299',
+            color: '#48184A',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.timeRight = this.add.text(472, 54, this.timeRemain, timeConfig);
         
         // Game Over flag
         this.gameOver = false;
-
-        // Create a Time Left Variable
-        this.timeLeft = 0;
 
         // Play Clock
         scoreConfig.fixedWidth = 0;
@@ -122,6 +137,10 @@ class Play extends Phaser.Scene {
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
         }
+
+        // Update the in-game timer
+        this.timeRemain = (game.settings.playTimer - this.clock.getElapsed());
+        this.timeRight.text = (this.timeRemain / 1000);
     }
 
     checkCollision(rocket, ship) {
@@ -153,11 +172,7 @@ class Play extends Phaser.Scene {
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
 
-        // get the current time left in the clock
-        // make gameTimer = to the current time left
-        // add the time of the ships TimerValue to gameTimer to get the time of the new clock
-        // create a new timer event
-        // clear the old clock
+        // Add time to the clock based on the ship's timeScore!
 
         // Restablish the config
         let scoreConfig = {
@@ -173,14 +188,21 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
 
-        this.timeLeft = (game.settings.playTimer - this.clock.getElapsed());
-        //console.log("this is how much time is left in ms: " + this.timeLeft);
-        //console.log("this is the total time of the current timer in ms: " + game.settings.gameTimer);
-        game.settings.playTimer = this.timeLeft + ship.time;
-        console.log("this is the length of gameTimer: " + game.settings.playTimer);
-        //console.log("this is the new timer's length in ms: " + (game.settings.gameTimer + (ship.time)));
+        // Get the time remaining on the clock
+        this.timeRemain = (game.settings.playTimer - this.clock.getElapsed());
+
+        // Set playTimer equal to the time left + the ship's timeScore
+        game.settings.playTimer = this.timeRemain + ship.time;
+
+        // Increment the time display
+        this.timeRight.text = (game.settings.playTimer / 1000);
+
+        // Put old-clock out of their misery
         this.clock.destroy();
-        //this.clock.remove([false]);
+        this.clock.remove([false]);
+        
+        // Create a new clock with a delay equal to playTimer
+        scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(game.settings.playTimer, () => {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5);
