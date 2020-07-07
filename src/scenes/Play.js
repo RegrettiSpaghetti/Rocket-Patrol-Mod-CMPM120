@@ -131,7 +131,7 @@ class Play extends Phaser.Scene {
         // Secret Timer
         if (this.gameOver) {
             this.secrets += delta; 
-            if (this.secrets >= 6000 && this.sound.get('easter_egg') == null) {
+            if (this.secrets >= 5000 && this.sound.get('easter_egg') == null) {
                 this.sound.play('easter_egg');
             }
         }
