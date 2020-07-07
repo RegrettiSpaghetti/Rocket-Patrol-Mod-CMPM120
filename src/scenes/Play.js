@@ -7,9 +7,11 @@ class Play extends Phaser.Scene {
 
     preload() {
         // load images / tile sprites
-        this.load.image('rocket', './assets/rocket.png');
-        this.load.image('spaceship', './assets/spaceship.png');
-        this.load.image('starfield', './assets/starfield.png');
+        this.load.image('rocket', './assets/new_rocket.png');
+        this.load.image('spaceship', './assets/he_cometh.png');
+        //this.load.image('spaceship2', './assets/he_cometh2');
+        this.load.image('starfield', './assets/star_bg.png');
+        this.load.image('planets', './assets/Planets.png');
         
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0,
@@ -18,27 +20,28 @@ class Play extends Phaser.Scene {
 
     create() {
         // place tile sprite bg
-        this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0);
+        this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0).setDepth(0);
+        this.planets = this.add.tileSprite(0, 0, 640, 480, 'planets').setOrigin(0, 0).setDepth(1);
 
-        this.add.rectangle(5, 5, 630, 32, 0xFFFFFF).setOrigin(0, 0);
-        this.add.rectangle(5, 443, 630, 32, 0xFFFFFF).setOrigin(0, 0);
-        this.add.rectangle(5, 5, 32, 455, 0xFFFFFF).setOrigin(0, 0);
-        this.add.rectangle(603, 5, 32, 455, 0xFFFFFF).setOrigin(0, 0);
+        this.add.rectangle(5, 5, 630, 32, 0xFFFFFF).setOrigin(0, 0).setDepth(3);
+        this.add.rectangle(5, 443, 630, 32, 0xFFFFFF).setOrigin(0, 0).setDepth(3);
+        this.add.rectangle(5, 5, 32, 455, 0xFFFFFF).setOrigin(0, 0).setDepth(3);
+        this.add.rectangle(603, 5, 32, 455, 0xFFFFFF).setOrigin(0, 0).setDepth(3);
         // green UI background
-        this.add.rectangle(37, 42, 566, 64, 0x00FF00).setOrigin(0, 0);
+        this.add.rectangle(37, 42, 566, 64, 0x00FF00).setOrigin(0, 0).setDepth(3);
 
         // add Rocket
-        this.p1Rocket = new Rocket(this, game.config.width/2, 431, 'rocket', 0).setScale(0.5, 0.5).setOrigin(0, 0);
+        this.p1Rocket = new Rocket(this, game.config.width/2, 421, 'rocket', 0).setScale(0.5, 0.5).setOrigin(0, 0).setDepth(2);
         
         //add spaceships [x3]
         this.ship01 = new Spaceship(this, game.config.width + 192, 132,
-        'spaceship', 0, 30, 2000).setOrigin(0, 0);
+        'spaceship', 0, 30, 2000).setOrigin(0, 0).setDepth(2);
     
         this.ship02 = new Spaceship(this, game.config.width + 96, 196,
-        'spaceship', 0, 20, 1000).setOrigin(0, 0);
+        'spaceship', 0, 20, 1000).setOrigin(0, 0).setDepth(2);
     
         this.ship03 = new Spaceship(this, game.config.width, 263,
-        'spaceship', 0, 10, 500).setOrigin(0, 0);
+        'spaceship', 0, 10, 500).setOrigin(0, 0).setDepth(2);
 
         // define our keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -71,7 +74,7 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 100
         }
-        this.scoreLeft = this.add.text(69, 54, this.p1Score, scoreConfig);
+        this.scoreLeft = this.add.text(69, 54, this.p1Score, scoreConfig).setDepth(3);
 
         // Time Display
         let timeConfig = {
@@ -86,24 +89,35 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 100
         }
-        this.timeRight = this.add.text(472, 54, this.timeRemain, timeConfig);
+        this.timeRight = this.add.text(472, 54, this.timeRemain, timeConfig).setDepth(3);
         
         // Game Over flag
         this.gameOver = false;
 
+        // Secrets~
+        this.secrets = 0;
+
         // Play Clock
         scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(game.settings.playTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5).setDepth(5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5).setDepth(5);
             this.gameOver = true;
             this.sound.play('game_over');
-            setTimeout(this.sound.play('easter_egg'), 6000);
         }, null, this);
     }
 
-    update() {
-        //check key input for restart
+    update(time, delta) {
+        
+        // Secret Timer
+        if (this.gameOver) {
+            this.secrets += delta; 
+            if (this.secrets >= 6000 && this.sound.get('easter_egg') == null) {
+                this.sound.play('easter_egg');
+            }
+        }
+
+        // Check key input for restart
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyF)) {
             this.scene.restart(this.p1Score);
             game.settings.playTimer = game.settings.gameTimer;
@@ -114,6 +128,7 @@ class Play extends Phaser.Scene {
         }
 
         this.starfield.tilePositionX -= 4;
+        this.planets.tilePositionX -= .7;
         if (!this.gameOver) {
             // update rocket
             this.p1Rocket.update();
@@ -162,7 +177,7 @@ class Play extends Phaser.Scene {
         ship.alpha = 0;                             // temporarily hides the ship
 
         // create an explosion at the ship's location
-        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
+        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0).setDepth(2);
         boom.anims.play('explode');                 // play the explosion animation
         boom.on('animationcomplete', () => {        // callback after anim completes
             ship.reset();                           // reset the ship's position
@@ -201,16 +216,15 @@ class Play extends Phaser.Scene {
 
         // Put old-clock out of their misery
         this.clock.destroy();
-        this.clock.remove([false]);
+        this.clock.remove(false);
         
         // Create a new clock with a delay equal to playTimer
         scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(game.settings.playTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5).setDepth(5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for menu', scoreConfig).setOrigin(0.5).setDepth(5);
             this.gameOver = true;
             this.sound.play('game_over');
-            setTimeout(this.sound.play('easter_egg'), 6000);
         }, null, this);
 
         // Play one of four random explosion SFX
