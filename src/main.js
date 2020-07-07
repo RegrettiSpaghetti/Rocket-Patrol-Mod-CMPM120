@@ -10,10 +10,12 @@
 //  New Animated Spaceship Sprite                             15 Points
 //  New art assets for Rocket, BG, Spaceship                  ?? Points
 //  Not-so-secret Easter Egg added after Game-Over            FACADE TIER
-//  
-//  Staying on the game-over menu for a certain amount of time plays a certain song by Eminem...
-//  While the original implementation was really elegant, it didn't work. Current implementation works, but could be sexier
-//  Worth somewhere between 5-10 points?
+//  |
+//  --> Staying on the game-over menu for a certain amount of time plays a certain song by Eminem...
+//      While the original implementation was really elegant, it didn't work. Current implementation works, but could be sexier
+//      Worth somewhere between 5-10 points?
+//
+//  Total Points Attempted:                                   100 Points
 
 // create game configuration obj
 let config = {
