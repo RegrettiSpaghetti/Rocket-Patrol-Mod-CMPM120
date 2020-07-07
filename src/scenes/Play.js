@@ -8,14 +8,15 @@ class Play extends Phaser.Scene {
     preload() {
         // load images / tile sprites
         this.load.image('rocket', './assets/new_rocket.png');
-        this.load.image('spaceship', './assets/he_cometh.png');
-        //this.load.image('spaceship2', './assets/he_cometh2');
         this.load.image('starfield', './assets/star_bg.png');
         this.load.image('planets', './assets/Planets.png');
         
-        // load spritesheet
+        // load spritesheets
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0,
         endFrame: 9});
+        
+        // load the texture atlas
+        this.load.atlas('spaceship', './assets/RocketAnim.png', './assets/sprites.json');
     }
 
     create() {
@@ -41,7 +42,7 @@ class Play extends Phaser.Scene {
         'spaceship', 0, 20, 1000).setOrigin(0, 0).setDepth(2);
     
         this.ship03 = new Spaceship(this, game.config.width, 263,
-        'spaceship', 0, 10, 500).setOrigin(0, 0).setDepth(2);
+        'spaceship', 0, 10, 0).setOrigin(0, 0).setDepth(2);
 
         // define our keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -55,6 +56,24 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
 
+        this.anims.create({
+            key: 'warp',
+            frames: this.anims.generateFrameNames('spaceship', {
+                prefix: 'he_cometh',
+                start: 1,
+                end: 2,
+                suffix: '',
+                zeropad: 0
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+
+        // Play the Ship's animation
+        this.ship01.anims.play('warp');
+        this.ship02.anims.play('warp');
+        this.ship03.anims.play('warp');
+        
         // Bind the score to the screen
         this.p1Score = 0;
 

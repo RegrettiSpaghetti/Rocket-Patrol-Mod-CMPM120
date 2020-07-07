@@ -53,8 +53,8 @@ class Menu extends Phaser.Scene {
             // easy mode
             game.settings = {
                 spaceshipSpeed: 3,
-                gameTimer: 5000,
-                playTimer: 5000
+                gameTimer: 60000,
+                playTimer: 60000
             }
 
             // play the beep SFX
@@ -68,8 +68,8 @@ class Menu extends Phaser.Scene {
             // hard mode
             game.settings = {
                 spaceshipSpeed: 4,
-                gameTimer: 5000,
-                playTimer: 5000
+                gameTimer: 45000,
+                playTimer: 45000
             }
 
             this.sound.play('sfx_select'); 
